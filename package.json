@@ -1,0 +1,14 @@
+{
+  "name": "push-torrent",
+  "version": "1.0.0",
+  "description": "A bittorrent client for education purposes!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "A Pushpendra(with Allen Kim's blog)",
+  "license": "ISC",
+  "dependencies": {
+    "bencode": "^4.0.0"
+  }
+}
