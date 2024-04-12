@@ -5,6 +5,7 @@ import bencode from "bencode"
 import dgram from 'dgram'
 import { Buffer } from 'buffer';
 import Url from 'url';
+import crypto from 'crypto'
 
 module.exports.getPeers = (torrent, callback) => {
     const socket = dgram.createSocket('upd4');
@@ -36,20 +37,23 @@ function udpSend(socket, message, rawUrl, callback = () => {} ) {
     socket.send(message, 0, message.length, url.port, url.host, callback)
 }
 
+function buildConnReq() {
+    const buf = Buffer.alloc(16)
 
+    buf.writeUInt32BE(0x417, 0)
+    buf.writeUint32BE(0x27101980, 4)
 
+    buf.writeUInt32BE(0, 8);
 
+    crypto.randomBytes(4).copy(buf, 12)
 
+    return buf
+}
 
-
-
-// const torrent = bencode.decode(fs.readFileSync('./puppy.torrent'))
-// // console.log(String.fromCharCode.apply(null, torrent.announce));
-// console.log(Buffer.from(torrent.announce).toString());
-// // const url = Url.parse(Buffer.from(torrent.announce).toString());
-// // console.log(url)
-// const socket = dgram.createSocket('udp4');
-// const myMsg = Buffer.from('hello?', 'utf8')
-// socket.on('message', msg => {
-//     console.log('message is', msg)
-// })
+function parseConnResponse(resp){
+    return {
+        action: resp.readUInt32BE(0),
+        transactionId: resp.readUInt32BE(4),
+        connectionId: resp.slice(8)
+    }
+}
